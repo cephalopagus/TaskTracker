@@ -1,7 +1,12 @@
 package main
 
-type Todo struct {
-	ID     int    `json:"id"`
-	Title  string `json:"Title"`
-	Status string `json:"Status"`
+import "time"
+
+type Task struct {
+	ID          int       `json:"id"`
+	Description string    `json:"Title"`
+	Status      string    `json:"Status"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
+type TaskList []Task

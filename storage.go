@@ -5,34 +5,29 @@ import (
 	"os"
 )
 
-func CheckJson() {
-	const file_name = "tasks.json"
-	var todos []Todo
-	data, err := os.ReadFile(file_name)
-	if os.IsNotExist(err) {
-		todos = []Todo{}
-		SaveTodo(file_name, todos)
+const FileName = "tasks.json"
 
-	} else if err != nil {
-		panic(err)
-	} else {
-		if err := json.Unmarshal(data, &todos); err != nil {
-			todos = []Todo{}
-			SaveTodo(file_name, todos)
-		}
+func LoadTask() (TaskList, error) {
+	if _, err := os.Stat(FileName); os.IsNotExist(err) {
+		return TaskList{}, nil
 	}
 
-}
-func SaveTodo(file_name string, todos []Todo) {
-	file, err := os.Create(file_name)
+	data, err := os.ReadFile(FileName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	defer file.Close()
 
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(todos); err != nil {
-		panic(err)
+	var tasks TaskList
+
+	err = json.Unmarshal(data, &tasks)
+	return tasks, err
+}
+
+func SaveTasks(tasks TaskList) error {
+	data, err := json.MarshalIndent(tasks, "", "  ")
+	if err != nil {
+		return err
 	}
+
+	return os.WriteFile(FileName, data, 0644)
 }
