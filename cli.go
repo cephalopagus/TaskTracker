@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -20,6 +21,8 @@ func StartApp() {
 		command := args[0]
 		new_text := args[1:]
 		switch {
+		case command == "help":
+			HelpCommand()
 		case command == "exit":
 			fmt.Print("\n=== APP SHUTING DOWN ===")
 			return
@@ -27,8 +30,16 @@ func StartApp() {
 			AddCommand(new_text)
 		case command == "list":
 			ListCommand()
-		}
+		case command == "delete":
 
+			idTask, err := strconv.Atoi(string(args[1]))
+			if err != nil {
+				fmt.Print("\n!!! WRONG ID !!!\n\n")
+			} else {
+				DeleteCommand(idTask)
+			}
+
+		}
 	}
 
 }
