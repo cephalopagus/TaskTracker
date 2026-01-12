@@ -51,7 +51,7 @@ func ListCommand() {
 		tabwriter.Debug,
 	)
 	fmt.Println()
-	fmt.Fprintln(w, "ID\tSTATUS\tDESCRIPTION\tCREATED\tUPDATED")
+	fmt.Fprintln(w, "ID\tDESCRIPTION\tSTATUS\tCREATED\tUPDATED")
 	fmt.Fprintln(w, "--\t------\t-----------\t-------\t-------")
 
 	for _, t := range list {
@@ -59,8 +59,8 @@ func ListCommand() {
 			w,
 			"%d\t%s\t%s\t%s\t%s\n",
 			t.ID,
-			t.Status,
 			t.Description,
+			t.Status,
 			t.CreatedAt.Format(time.RFC822),
 			t.UpdatedAt.Format(time.RFC822),
 		)
@@ -92,6 +92,7 @@ func DeleteCommand(idTask int) {
 	fmt.Print("\n!!! ID NOT FOUND !!!\n\n")
 
 }
+
 func HelpCommand() {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 5, ' ', 0)
 
@@ -111,9 +112,113 @@ func HelpCommand() {
 
 	fmt.Fprintln(w, " >> update `id` `description`\tUpdate description by id")
 
-	fmt.Fprintln(w, " >> mark in-progress `id`\tMarking a task as in progress by id")
+	fmt.Fprintln(w, " >> mark-in-progress `id`\tMarking a task as in progress by id")
 
-	fmt.Fprintln(w, " >> mark done `id`\tMarking a task as in done by id")
+	fmt.Fprintln(w, " >> mark-done `id`\tMarking a task as in done by id")
+
+	w.Flush()
+	fmt.Println()
+}
+
+func MarkInProgress(idTask int) {
+	oldTask, err := LoadTask()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, v := range oldTask {
+		if v.ID == idTask {
+			oldTask[idTask-1].Status, oldTask[idTask-1].UpdatedAt = "In progress", time.Now()
+
+			SaveTasks(oldTask)
+			fmt.Print("\n=== STATUS CHANGED ===\n\n")
+			return
+		}
+	}
+	fmt.Print("\n!!! ID NOT FOUND !!!\n\n")
+}
+
+func MarkDone(idTask int) {
+	oldTask, err := LoadTask()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, v := range oldTask {
+		if v.ID == idTask {
+			oldTask[idTask-1].Status, oldTask[idTask-1].UpdatedAt = "Done", time.Now()
+
+			SaveTasks(oldTask)
+			fmt.Print("\n=== STATUS CHANGED ===\n\n")
+			return
+		}
+	}
+	fmt.Print("\n!!! ID NOT FOUND !!!\n\n")
+}
+
+func ListByStatus(status string) {
+	list, err := LoadTask()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	w := tabwriter.NewWriter(
+		os.Stdout,
+		0, 0, 5, ' ',
+		tabwriter.Debug,
+	)
+	fmt.Println()
+	fmt.Fprintln(w, "ID\tDESCRIPTION\tSTATUS\tCREATED\tUPDATED")
+	fmt.Fprintln(w, "--\t------\t-----------\t-------\t-------")
+
+	switch status {
+	case "done":
+		for _, t := range list {
+			if t.Status == "Done" {
+				fmt.Fprintf(
+					w,
+					"%d\t%s\t%s\t%s\t%s\n",
+					t.ID,
+					t.Description,
+					t.Status,
+					t.CreatedAt.Format(time.RFC822),
+					t.UpdatedAt.Format(time.RFC822),
+				)
+			}
+
+		}
+	case "in-progress":
+		for _, t := range list {
+			if t.Status == "In progress" {
+				fmt.Fprintf(
+					w,
+					"%d\t%s\t%s\t%s\t%s\n",
+					t.ID,
+					t.Description,
+					t.Status,
+					t.CreatedAt.Format(time.RFC822),
+					t.UpdatedAt.Format(time.RFC822),
+				)
+			}
+
+		}
+	case "todo":
+		for _, t := range list {
+			if t.Status == "To do" {
+				fmt.Fprintf(
+					w,
+					"%d\t%s\t%s\t%s\t%s\n",
+					t.ID,
+					t.Description,
+					t.Status,
+					t.CreatedAt.Format(time.RFC822),
+					t.UpdatedAt.Format(time.RFC822),
+				)
+			}
+
+		}
+
+	}
 
 	w.Flush()
 	fmt.Println()

@@ -6,7 +6,7 @@ type Task struct {
 	ID          int       `json:"id"`
 	Description string    `json:"Title"`
 	Status      string    `json:"Status"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	CreatedAt   time.Time `json:"CreatedAt"`
+	UpdatedAt   time.Time `json:"UpdatedAt"`
 }
 type TaskList []Task
