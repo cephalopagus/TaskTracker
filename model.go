@@ -4,7 +4,7 @@ import "time"
 
 type Task struct {
 	ID          int       `json:"id"`
-	Description string    `json:"Title"`
+	Description string    `json:"Description"`
 	Status      string    `json:"Status"`
 	CreatedAt   time.Time `json:"CreatedAt"`
 	UpdatedAt   time.Time `json:"UpdatedAt"`

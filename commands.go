@@ -223,3 +223,25 @@ func ListByStatus(status string) {
 	w.Flush()
 	fmt.Println()
 }
+
+func UpdateTask(idTask int, args []string) {
+
+	description := strings.Join(args, " ")
+
+	oldTask, err := LoadTask()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, v := range oldTask {
+		if v.ID == idTask {
+			oldTask[idTask-1].Description, oldTask[idTask-1].UpdatedAt = description, time.Now()
+			SaveTasks(oldTask)
+			fmt.Print("\n=== DESCRIPTION CHANGED ===\n\n")
+			return
+		}
+	}
+
+	fmt.Print("\n!!! ID NOT FOUND !!!\n\n")
+}
